@@ -48,7 +48,7 @@ export default function DashboardAdmin() {
 
     const handleCreateDivision = async (e) => {
         e.preventDefault();
-        
+
         try {
             const divisionData = {
                 nombre: formDataDivision.nombre,
@@ -77,7 +77,7 @@ export default function DashboardAdmin() {
 
     const handleCreatePrograma = async (e) => {
         e.preventDefault();
-        
+
         if (!formDataPrograma.divisionId || formDataPrograma.divisionId === '') {
             alert('Por favor seleccione una división');
             return;
@@ -138,8 +138,14 @@ export default function DashboardAdmin() {
         setEditMode(true);
         setShowModalPrograma(true);
     };
-
     const handleDeleteDivision = async (id) => {
+        const programasAsociados = programas.filter(p => p.divisionId === id);
+
+        if (programasAsociados.length > 0) {
+            alert(`No se puede eliminar la división porque tiene ${programasAsociados.length} programa(s) educativo(s) asociado(s). Elimine primero los programas.`);
+            return;
+        }
+
         if (window.confirm('¿Está seguro de eliminar esta división?')) {
             try {
                 await axios.delete(`http://localhost:8080/api/divisiones/${id}`);
@@ -167,10 +173,10 @@ export default function DashboardAdmin() {
 
     const handleToggleActivoPrograma = async (id, currentState) => {
         try {
-            const endpoint = currentState 
+            const endpoint = currentState
                 ? `http://localhost:8080/api/programas/${id}/deshabilitar`
                 : `http://localhost:8080/api/programas/${id}/habilitar`;
-            
+
             await axios.patch(endpoint);
             fetchProgramas();
         } catch (error) {
@@ -207,8 +213,8 @@ export default function DashboardAdmin() {
             <div className="card mb-4">
                 <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h3 className="mb-0">Divisiones</h3>
-                    <button 
-                        className="btn btn-light btn-sm" 
+                    <button
+                        className="btn btn-light btn-sm"
                         onClick={() => {
                             setFormDataDivision({ nombre: '', activo: true, image: '' });
                             setEditMode(false);
@@ -244,7 +250,7 @@ export default function DashboardAdmin() {
                                             <td>{division.nombre}</td>
                                             <td>
                                                 {division.image ? (
-                                                    <img src={division.image} alt={division.nombre} style={{width: '50px', height: '50px', objectFit: 'cover'}} />
+                                                    <img src={division.image} alt={division.nombre} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
                                                 ) : 'Sin imagen'}
                                             </td>
                                             <td>
@@ -253,13 +259,13 @@ export default function DashboardAdmin() {
                                                 </span>
                                             </td>
                                             <td>
-                                                <button 
+                                                <button
                                                     className="btn btn-warning btn-sm me-2"
                                                     onClick={() => handleEditDivision(division)}
                                                 >
                                                     Editar
                                                 </button>
-                                                <button 
+                                                <button
                                                     className="btn btn-danger btn-sm"
                                                     onClick={() => handleDeleteDivision(division.divisionId)}
                                                 >
@@ -278,8 +284,8 @@ export default function DashboardAdmin() {
             <div className="card mb-4">
                 <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h3 className="mb-0">Programas Educativos</h3>
-                    <button 
-                        className="btn btn-light btn-sm" 
+                    <button
+                        className="btn btn-light btn-sm"
                         onClick={() => {
                             setFormDataPrograma({ nombre: '', activo: true, divisionId: '' });
                             setEditMode(false);
@@ -320,19 +326,13 @@ export default function DashboardAdmin() {
                                                 </span>
                                             </td>
                                             <td>
-                                                <button 
+                                                <button
                                                     className="btn btn-warning btn-sm me-2"
                                                     onClick={() => handleEditPrograma(programa)}
                                                 >
                                                     Editar
                                                 </button>
-                                                <button 
-                                                    className={`btn btn-sm me-2 ${programa.activo ? 'btn-secondary' : 'btn-success'}`}
-                                                    onClick={() => handleToggleActivoPrograma(programa.programaId, programa.activo)}
-                                                >
-                                                    {programa.activo ? 'Desactivar' : 'Activar'}
-                                                </button>
-                                                <button 
+                                                <button
                                                     className="btn btn-danger btn-sm"
                                                     onClick={() => handleDeletePrograma(programa.programaId)}
                                                 >
@@ -356,9 +356,9 @@ export default function DashboardAdmin() {
                                 <h5 className="modal-title">
                                     {editMode ? 'Editar División' : 'Crear División'}
                                 </h5>
-                                <button 
-                                    type="button" 
-                                    className="btn-close" 
+                                <button
+                                    type="button"
+                                    className="btn-close"
                                     onClick={() => setShowModalDivision(false)}
                                 ></button>
                             </div>
@@ -366,32 +366,32 @@ export default function DashboardAdmin() {
                                 <form onSubmit={handleCreateDivision} id="divisionForm">
                                     <div className="mb-3">
                                         <label htmlFor="nombre" className="form-label">Nombre *</label>
-                                        <input 
-                                            type="text" 
-                                            className="form-control" 
-                                            id="nombre" 
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="nombre"
                                             name="nombre"
                                             value={formDataDivision.nombre}
                                             onChange={handleInputChangeDivision}
-                                            required 
+                                            required
                                         />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="image" className="form-label">URL de Imagen</label>
-                                        <input 
-                                            type="text" 
-                                            className="form-control" 
-                                            id="image" 
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="image"
                                             name="image"
                                             value={formDataDivision.image}
                                             onChange={handleInputChangeDivision}
                                         />
                                     </div>
                                     <div className="mb-3 form-check">
-                                        <input 
-                                            type="checkbox" 
-                                            className="form-check-input" 
-                                            id="activo" 
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            id="activo"
                                             name="activo"
                                             checked={formDataDivision.activo}
                                             onChange={handleInputChangeDivision}
@@ -401,15 +401,15 @@ export default function DashboardAdmin() {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
                                     onClick={() => setShowModalDivision(false)}
                                 >
                                     Cancelar
                                 </button>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     className="btn btn-primary"
                                     form="divisionForm"
                                 >
@@ -429,9 +429,9 @@ export default function DashboardAdmin() {
                                 <h5 className="modal-title">
                                     {editMode ? 'Editar Programa Educativo' : 'Crear Programa Educativo'}
                                 </h5>
-                                <button 
-                                    type="button" 
-                                    className="btn-close" 
+                                <button
+                                    type="button"
+                                    className="btn-close"
                                     onClick={() => setShowModalPrograma(false)}
                                 ></button>
                             </div>
@@ -439,21 +439,21 @@ export default function DashboardAdmin() {
                                 <form onSubmit={handleCreatePrograma} id="programaForm">
                                     <div className="mb-3">
                                         <label htmlFor="nombrePrograma" className="form-label">Nombre *</label>
-                                        <input 
-                                            type="text" 
-                                            className="form-control" 
-                                            id="nombrePrograma" 
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="nombrePrograma"
                                             name="nombre"
                                             value={formDataPrograma.nombre}
                                             onChange={handleInputChangePrograma}
-                                            required 
+                                            required
                                         />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="divisionId" className="form-label">División *</label>
-                                        <select 
-                                            className="form-select" 
-                                            id="divisionId" 
+                                        <select
+                                            className="form-select"
+                                            id="divisionId"
                                             name="divisionId"
                                             value={formDataPrograma.divisionId}
                                             onChange={handleInputChangePrograma}
@@ -468,10 +468,10 @@ export default function DashboardAdmin() {
                                         </select>
                                     </div>
                                     <div className="mb-3 form-check">
-                                        <input 
-                                            type="checkbox" 
-                                            className="form-check-input" 
-                                            id="activoPrograma" 
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            id="activoPrograma"
                                             name="activo"
                                             checked={formDataPrograma.activo}
                                             onChange={handleInputChangePrograma}
@@ -481,15 +481,15 @@ export default function DashboardAdmin() {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
                                     onClick={() => setShowModalPrograma(false)}
                                 >
                                     Cancelar
                                 </button>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     className="btn btn-success"
                                     form="programaForm"
                                 >

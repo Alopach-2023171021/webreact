@@ -5,7 +5,7 @@ import DashboardAdmin from './pages/DashboardAdmin';
 function App() {
   return (
     <Routes>
-      <Route path="/dashboardAdmin" element={<DashboardAdmin />} />
+      <Route path="/" element={<DashboardAdmin />} />
     </Routes>
   );
 }
